@@ -15,7 +15,7 @@ const Posts = (props) => {
             <tbody id="posts-listing">
                 {posts.map((singlePost) => {
                     return (
-                        <tr>
+                        <tr key={singlePost.id}>
                             <td>{singlePost.id}</td>
                             <td>{singlePost.userId}</td>
                             <td>{singlePost.title}</td>
