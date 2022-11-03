@@ -57,7 +57,7 @@ const MainApp = () => {
             <a className="btn btn-primary" data-toggle="modal" href="#create-post">
                 Create Post
             </a>
-            <CreatePost />
+            <CreatePost baseUrl={baseUrl} getPosts={getPosts}/>
             {
                 posts.length > 0 ? (
                     <Posts posts={posts} deletePost={deletePost} />

@@ -1,6 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 
-const CreatePost = () => {
+const CreatePost = (props) => {
+    const {baseUrl, getPosts} = props;
+
+    const [title, setTitle] = useState("");
+    const [body, setBody] = useState("");
+    
+    const titleInputChangeHandler = (event) => {
+        event.preventDefault();
+       setTitle(event.target.value);
+    }
+    const bodyInputChangeHandler =(event) => {
+        event.preventDefault();
+        setBody(event.target.value);
+    }
+    const createPostFormSubmitHandler =(event) => {
+        event.preventDefault();
+        if (title == '') {
+            Swal.fire("please fill title input field", "", "error");
+            return;
+        }
+        if (body == '') {
+            Swal.fire("please fill body input field", "", "error");
+            return;
+        }
+        const formBody = {
+            title,
+            body,
+        }
+        fetch(`${baseUrl}/posts`, {
+            headers:{"Content-Type": "application/json",},
+            method: "POST",
+            body: JSON.stringify(formBody),
+        })
+        .then( ()=>{
+            setTitle('');
+            setBody('');
+            let $ = window.$;
+            $("#create-post").modal("hide");
+            getPosts();
+        })
+        .catch((error) => console.log(error));
+    }
     return (
         <div className="modal fade" id="create-post">
             <div className="modal-dialog">
@@ -25,6 +67,8 @@ const CreatePost = () => {
                                     className="form-control"
                                     id="post_title"
                                     placeholder="Title"
+                                    onChange={titleInputChangeHandler}
+                                    value={title}
                                 />
                             </div>
 
@@ -37,10 +81,12 @@ const CreatePost = () => {
                                     rows="10"
                                     placeholder="Body"
                                     className="form-control"
+                                    onChange={bodyInputChangeHandler}
+                                    value={body}
                                 ></textarea>
                             </div>
 
-                            <button type="submit" className="btn btn-primary">
+                            <button type="submit" className="btn btn-primary" onClick={createPostFormSubmitHandler }>
                                 Submit
                             </button>
                         </form>
