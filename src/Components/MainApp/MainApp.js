@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import CreatePost from '../CreatePost/CreatePost';
 import Posts from '../Posts/Posts';
+import EditPost from '../EditPost/EditPost';
 
 
 const MainApp = () => {
 
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useState([]);
+    const [editPostData, setEditPostData] = useState(null);
 
     const baseUrl = `https://jsonplaceholder.typicode.com`;
 
@@ -15,14 +17,14 @@ const MainApp = () => {
         getPosts();
     }, []);
 
-    const getPosts = async () => {
+    const getPosts = useCallback(async () => {
         setLoading(true);
         await fetch(`${baseUrl}/posts`)
             .then((response) => response.json())
             .then((data) => setPosts(data))
             .catch((error) => console.error(error));
         setLoading(false);
-    }
+    },[posts]);
 
     const deletePost = async (event, postId) => {
         event.preventDefault();
@@ -48,6 +50,19 @@ const MainApp = () => {
             }
         })
     }
+
+    const editPost = (event,postId) => {
+        event.preventDefault();
+        fetch(`${baseUrl}/posts/${postId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            setEditPostData(data);
+            let $ = window.$;
+            $("#edit-post-modal").modal("show");
+        })
+        .catch((error)=> console.error(error));
+    }
+
     if (loading) {
         return <h2>Loading.....</h2>;
     }
@@ -58,9 +73,10 @@ const MainApp = () => {
                 Create Post
             </a>
             <CreatePost baseUrl={baseUrl} getPosts={getPosts}/>
+            <EditPost editPostData={editPostData} baseUrl={baseUrl} getPosts={getPosts} />
             {
                 posts.length > 0 ? (
-                    <Posts posts={posts} deletePost={deletePost} />
+                    <Posts posts={posts} deletePost={deletePost} editPost={editPost}/>
                 ) : (
                     <h2>No Post Found!</h2>
                 )}

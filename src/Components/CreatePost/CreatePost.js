@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import Swal from 'sweetalert2';
 
 const CreatePost = (props) => {
@@ -97,4 +97,4 @@ const CreatePost = (props) => {
     );
 }
 
-export default CreatePost;
+export default memo(CreatePost);

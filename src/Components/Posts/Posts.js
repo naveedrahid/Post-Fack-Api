@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const Posts = (props) => {
-    const { posts, deletePost } = props;
+    const { posts, deletePost, editPost } = props;
     return (
         <table className="table table-hover">
             <thead>
@@ -20,8 +20,17 @@ const Posts = (props) => {
                             <td>{singlePost.userId}</td>
                             <td>{singlePost.title}</td>
                             <td>
+                                <a
+                                    href="#"
+                                    className="btn btn-primary"
+                                    onClick={(event) => editPost(event, singlePost.id)}
+                                    >
+                                    Edit
+                                </a>
+                            </td>
+                            <td>
                                 <a href="#" className="btn btn-danger"
-                                onClick={(event)=> deletePost(event, singlePost.id)}
+                                    onClick={(event) => deletePost(event, singlePost.id)}
                                 >
                                     Delete
                                 </a>
@@ -34,4 +43,4 @@ const Posts = (props) => {
     );
 }
 
-export default Posts;
+export default memo(Posts);
