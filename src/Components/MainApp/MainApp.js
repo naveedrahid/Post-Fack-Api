@@ -24,7 +24,7 @@ const MainApp = () => {
             .then((data) => setPosts(data))
             .catch((error) => console.error(error));
         setLoading(false);
-    },[posts]);
+    }, [posts]);
 
     const deletePost = async (event, postId) => {
         event.preventDefault();
@@ -51,36 +51,46 @@ const MainApp = () => {
         })
     }
 
-    const editPost = (event,postId) => {
-        event.preventDefault();
-        fetch(`${baseUrl}/posts/${postId}`)
-        .then((response) => response.json())
-        .then((data) => {
-            setEditPostData(data);
-            let $ = window.$;
-            $("#edit-post-modal").modal("show");
-        })
-        .catch((error)=> console.error(error));
-    }
+    const editPost = useCallback(
+        async (event, postId) => {
+            event.preventDefault();
+            setLoading(true);
+            await fetch(`${baseUrl}/posts/${postId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setEditPostData(data);
+                    let $ = window.$;
+                    $("#edit-post-modal").modal("show");
+                })
+                .catch((error) => console.error(error));
+            setLoading(false);
+        }, [editPostData]);
 
-    if (loading) {
-        return <h2>Loading.....</h2>;
-    }
+    // if (loading) {
+    //     return <h2>Loading.....</h2>;
+    // }
     return (
-        <div className="container">
-            <h1>Posts</h1>
-            <a className="btn btn-primary" data-toggle="modal" href="#create-post">
-                Create Post
-            </a>
-            <CreatePost baseUrl={baseUrl} getPosts={getPosts}/>
-            <EditPost editPostData={editPostData} baseUrl={baseUrl} getPosts={getPosts} />
-            {
-                posts.length > 0 ? (
-                    <Posts posts={posts} deletePost={deletePost} editPost={editPost}/>
-                ) : (
-                    <h2>No Post Found!</h2>
-                )}
-        </div>
+        <>
+            {loading && (
+                <div className="loader-container">
+                    <div className="spinner"></div>
+                </div>
+            )}
+            <div className="container">
+                <h1>Posts</h1>
+                <a className="btn btn-primary" data-toggle="modal" href="#create-post">
+                    Create Post
+                </a>
+                <CreatePost baseUrl={baseUrl} getPosts={getPosts} />
+                <EditPost editPostData={editPostData} baseUrl={baseUrl} getPosts={getPosts} />
+                {
+                    posts.length > 0 ? (
+                        <Posts posts={posts} deletePost={deletePost} editPost={editPost} />
+                    ) : (
+                        <h2>No Post Found!</h2>
+                    )}
+            </div>
+        </>
     );
 }
 
